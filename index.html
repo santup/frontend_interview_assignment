@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <head>
 	<meta charset="utf-8" />
@@ -13,8 +12,13 @@
 </head>
 
 <body>
-<div class="container text-center">				
-	    <div id="tbl_id"></div>		
+<div class="container text-center">	
+		<div id="error" class="alert alert-danger">
+			
+		</div>			
+	    <div id="tbl_id">
+	    	
+	    </div>		
 </div>
 
 <script type="text/javascript">
@@ -32,14 +36,15 @@
 					$('table').empty();
 					var tbl = $('<table/>');
 					tbl.append("<tr class=''>\
-						<th class='text-center'>SELECTED</th>\
-						<th class='text-center'>ITEM ID</th>\
-						<th class='text-center'>DISPLAY</th>\
+						<th class='text-center bg-color'>SELECTED</th>\
+						<th class='text-center bg-color'>ITEM ID</th>\
+						<th class='text-center bg-color'>DISPLAY</th>\
 					</tr>");
 					var selected= response.selected;
 					if(data.length==0){
 						data.push(response);
 					}
+					
 					var flag=false;
 					for(var j=0;j<data.length;j++){
 						if(data[j].item_id==response.item_id){
@@ -47,6 +52,7 @@
 							data[j].selected=response.selected;
 							data[j].display=response.display;
 							flag=true;
+							sel = response.item_id;
 
 						}
 
@@ -65,17 +71,27 @@
 
 
 
+					var sel;
 					for (var i = 0; i < data.length; i++) {
+							var tr = $('<tr/>'); 
+								
+                        
+							for (var x = 0; x < data.length; x++){
+							if (data[x].item_id == sel) {
+								console.log(data[x]);
+								tr.removeClass('colorIt');
+							};
+							}
 
 						if(data[i].selected==1){
 
-							var tr = $('<tr/>'); 
-
-							tr.addClass('colorIt');						  	
+							
+							tr.addClass('colorIt');
 							tr.append("<td>" + data[i].selected + "</td>");
 							tr.append("<td>" + data[i].item_id + "</td>");
 							tr.append("<td>" + data[i].display + "</td>");
 							tbl.append(tr);
+							sel = data[i].item_id;
 
 						}
 						else{
@@ -86,6 +102,7 @@
 							tbl.append(tr);
 
 						}
+
 					};
 
 					$("#tbl_id").append(tbl);
@@ -94,13 +111,29 @@
 					tbl.addClass('table'); 						
 					tbl.addClass('table-bordered');   			
 				},
-				error: function(response) {
-					var json = $.parseJSON(response);
-					alert(json);
-				}   
-			});  
+				error: function(jqXHR, textStatus) {
+						$('#error').css('display','block');
 
+			            if (jqXHR.status === 0) {
+			                $('#error').html('Not connect.\n Verify Network.');
+			            } else if (jqXHR.status == 404) {
+			                $('#error').html('Requested page not found. [404]');
+			            } else if (jqXHR.status == 500) {
+			                $('#error').html('Internal Server Error [500].');
+			            } else if (textStatus === 'parsererror') {
+			                $('#error').html('Requested JSON parse failed.');
+			            } else if (textStatus === 'timeout') {
+			                $('#error').html('Time out error.');
+			            } else if (textStatus === 'abort') {
+			                $('#error').html('Ajax request aborted.');
+			            } else {
+			                $('#error').html('Uncaught Error.\n' + jqXHR.responseText);
+			            }
+        		} 
+			});  
+						
 		},2000);
+
 	});	
 </script>
 		
