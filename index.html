@@ -112,6 +112,7 @@
 					tbl.addClass('table-bordered');   			
 				},
 				error: function(jqXHR, textStatus) {
+						$('#tbl_id').css('display','none');
 						$('#error').css('display','block');
 
 			            if (jqXHR.status === 0) {
