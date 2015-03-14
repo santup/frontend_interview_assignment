@@ -9,138 +9,100 @@
 	<link rel="stylesheet" type="text/css" href="css/bootstrap.css">
 	<title> </title>
 	<script type="text/javascript" src="scripts/jquery.min.js"></script>
-
-<script type="text/javascript" src="scripts/bootstrap.min.js"></script>
-	
-	<style type="text/css">
-	.colorIt{
-		background-color: #CCFCD2;
-	}
-
-	.tableNew{ 
-			width:80% !important;
-			text-align: center;
-			 position: absolute; /* here, fixed or relative may work too*/
-  			
-		    top: 0;
-		    bottom: 0;
-		    overflow: scroll;
-	}	    
-	
-	th{
-		text-align: center;
-	}
-
-	#tbl-id{
-		padding:30px;
-	}
-	</style>
+	<script type="text/javascript" src="scripts/bootstrap.min.js"></script>
 </head>
+
 <body>
-<div class="container text-center">	
-			
-	    <div id="tbl_id"></div>
-		
+<div class="container text-center">				
+	    <div id="tbl_id"></div>		
 </div>
 
+<script type="text/javascript">
+	$(document).ready(function(){				
 
-		<script type="text/javascript">
-			$(document).ready(function(){
-				
-				
+		data = [];
+		setInterval(function(){	
 
-				data = [];
-				setInterval(function(){	
+			$.ajax({
+				type: "GET",
+				url: '/get_update',
+				contentType: "application/json",
+				dataType: "json",						
+				success:function(response) {
+					$('table').empty();
+					var tbl = $('<table/>');
+					tbl.append("<tr class=''>\
+						<th class='text-center'>SELECTED</th>\
+						<th class='text-center'>ITEM ID</th>\
+						<th class='text-center'>DISPLAY</th>\
+					</tr>");
+					var selected= response.selected;
+					if(data.length==0){
+						data.push(response);
+					}
+					var flag=false;
+					for(var j=0;j<data.length;j++){
+						if(data[j].item_id==response.item_id){
+							data[j].item_id=response.item_id;
+							data[j].selected=response.selected;
+							data[j].display=response.display;
+							flag=true;
 
-					$.ajax({
-						type: "GET",
-						url: '/get_update',
-						contentType: "application/json",
-						dataType: "json",						
-						success:function(response) {
-                           	 $('table').empty();
-							  var tbl = $('<table/>');
-							  tbl.append("<tr class=''>\
-							  		<th>Selected</th>\
-							        <th>Item Id</th>\
-							        <th>Display</th>\
-							    </tr>");
-							  var selected= response.selected;
-							  if(data.length==0){
-							  		data.push(response);
-							  }
-							  var flag=false;
-							  for(var j=0;j<data.length;j++){
-							   	if(data[j].item_id==response.item_id){
-									data[j].item_id=response.item_id;
-									data[j].selected=response.selected;
-									data[j].display=response.display;
-							   		flag=true;
+						}
 
-								}
-								
-							  }
+					}
 
-							  if(flag==false){
+					if(flag==false){
 
-							  	data.push(response);
-							  }
+						data.push(response);
+					}
 
-							  data.sort(function(obj1, obj2) {
-									
-									return obj1.item_id - obj2.item_id;
-							  });
-							  
-							   
+					data.sort(function(obj1, obj2) {
+
+						return obj1.item_id - obj2.item_id;
+					});
 
 
-							  for (var i = 0; i < data.length; i++) {
 
-							  	if(data[i].selected==1){
 
-							  	var tr = $('<tr/>'); 
-							  	
-							  	tr.addClass('colorIt');						  	
-					            tr.append("<td>" + data[i].selected + "</td>");
-					            tr.append("<td>" + data[i].item_id + "</td>");
-					            tr.append("<td>" + data[i].display + "</td>");
-					            tbl.append(tr);
+					for (var i = 0; i < data.length; i++) {
 
-					        	}
-					        	else{
-								var tr = $('<tr/>'); 
-					            tr.append("<td>" + data[i].selected + "</td>");
-					            tr.append("<td>" + data[i].item_id + "</td>");
-					            tr.append("<td>" + data[i].display + "</td>");
-					            tbl.append(tr);
+						if(data[i].selected==1){
 
-					        	}
-							  };
+							var tr = $('<tr/>'); 
 
-					          $("#tbl_id").append(tbl);
-					          
-  									tbl.addClass('tableNew'); 					
-  									tbl.addClass('table'); 						
-  									tbl.addClass('table-bordered'); 						
+							tr.addClass('colorIt');						  	
+							tr.append("<td>" + data[i].selected + "</td>");
+							tr.append("<td>" + data[i].item_id + "</td>");
+							tr.append("<td>" + data[i].display + "</td>");
+							tbl.append(tr);
 
- 							  
-					         			
-					          	       
+						}
+						else{
+							var tr = $('<tr/>'); 
+							tr.append("<td>" + data[i].selected + "</td>");
+							tr.append("<td>" + data[i].item_id + "</td>");
+							tr.append("<td>" + data[i].display + "</td>");
+							tbl.append(tr);
 
-                         },
-                         error: function(response) {
-                         	var json = $.parseJSON(response);
-							alert(json);
-						}   
-                     });   
-				},2000);
-			});	
-			
+						}
+					};
 
-		</script>
+					$("#tbl_id").append(tbl);
+
+					tbl.addClass('tableNew'); 					
+					tbl.addClass('table'); 						
+					tbl.addClass('table-bordered');   			
+				},
+				error: function(response) {
+					var json = $.parseJSON(response);
+					alert(json);
+				}   
+			});  
+
+		},2000);
+	});	
+</script>
 		
 </body>
-<script type="text/javascript" src="scripts/main.js"></script>
-
-<script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
 </html>
